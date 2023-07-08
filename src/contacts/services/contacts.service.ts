@@ -1,18 +1,19 @@
 import { Injectable } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
 import { Contact } from "../entities/contacts.entity";
 
 @Injectable()
 export class ContactsService {
 
-    private fakeContacts: Contact[] = [
-        {
-            phoneNumber: "123123213",
-            id: 1,
-            isPublic: true
-        }
-    ]
+    constructor(
+        @InjectRepository(Contact)
+        private contactRepository: Repository<Contact>
+    ) {
+
+    }
 
     getPublicContacts() {
-        return this.fakeContacts;
+        return this.contactRepository.find();
     }
 }
