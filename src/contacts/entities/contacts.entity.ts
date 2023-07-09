@@ -1,19 +1,11 @@
 import { Field, ObjectType } from "@nestjs/graphql";
+import { IdentityEntity } from "src/common/entities/identity-entity";
 import { Column, Entity, Generated, Index, PrimaryGeneratedColumn } from "typeorm";
 
 
 @Entity("cm_contacts")
 @ObjectType()
-export class Contact {
-    @PrimaryGeneratedColumn()
-    id: number;
-
-    @Column({ name: 'uuid' })
-    @Generated('uuid')
-    @Index('uuid-idx')
-    @Field()
-    uuid: string;
-
+export class Contact extends IdentityEntity {
     @Column({ name: 'phone_number' })
     @Field()
     phoneNumber: string;
@@ -21,7 +13,4 @@ export class Contact {
     @Column({ name: 'is-public', default: false })
     @Field()
     isPublic: boolean;
-
-    @Column({ default: false })
-    deleted: boolean
 } 

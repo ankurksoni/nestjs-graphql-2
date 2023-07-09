@@ -4,6 +4,11 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ContactsModule } from './contacts/contacts.module';
 import { Contact } from './contacts/entities/contacts.entity';
+import { Permission } from './users/entities/permission.entity';
+import { Role } from './users/entities/role.entity';
+import { User } from './users/entities/users.entity';
+import { UsersModule } from './users/users.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -14,14 +19,17 @@ import { Contact } from './contacts/entities/contacts.entity';
       username: 'postgres',
       password: 'postgres',
       database: 'postgres',
-      entities: [Contact],
+      entities: [Contact, User, Role, Permission],
       synchronize: true,
     }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: true,
+      installSubscriptionHandlers: true
     }),
-    ContactsModule],
+    ContactsModule,
+    UsersModule,
+    AuthModule],
   controllers: [],
   providers: [],
 })

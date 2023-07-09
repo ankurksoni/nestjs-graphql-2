@@ -1,9 +1,13 @@
 import { Injectable } from "@nestjs/common";
+import { Subscription } from "@nestjs/graphql";
 import { InjectRepository } from "@nestjs/typeorm";
 import { GraphQLError } from "graphql";
+import { PubSub } from "graphql-subscriptions";
 import { Repository } from "typeorm";
 import { Contact } from "../entities/contacts.entity";
 import { ContactInput } from "../inputs/contact.input";
+
+const pubSub = new PubSub();
 
 @Injectable()
 export class ContactsService {
@@ -39,7 +43,9 @@ export class ContactsService {
         const newContact = new Contact();
         newContact.phoneNumber = phoneNumber;
 
-        return this.contactRepository.save(newContact);
+        const savedDContact = this.contactRepository.save(newContact);
+        pubSub.publish(`contactAdded`, { contactAdded: savedDContact });
+        return savedDContact;
     }
 
     async updateContact(uuid: string, { phoneNumber }: ContactInput) {
@@ -70,4 +76,9 @@ export class ContactsService {
         existingContact.deleted = true;
         return this.contactRepository.save(existingContact);
     }
+
+    @Subscription(returns => Contact, { name: 'contactAdded' })
+    contactAdded() {
+        return pubSub.asyncIterator('contactAdded');
+    };
 }

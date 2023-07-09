@@ -72,6 +72,8 @@ $ npm i @nestjs/graphql @nestjs/apollo @apollo/server graphql
 
 # create module
 $ nest g mo contacts
+$ nest g mo auth
+$ nest g mo users
 
 # e2e tests
 $ npm run test:e2e
