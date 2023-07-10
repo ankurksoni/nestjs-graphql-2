@@ -1,4 +1,6 @@
+import { UseGuards } from "@nestjs/common";
 import { Args, Mutation, Query, Resolver } from "@nestjs/graphql";
+import { GraphqlAuthGuard } from "src/auth/guards/graphql.guard";
 import { Contact } from "../entities/contacts.entity";
 import { ContactInput } from "../inputs/contact.input";
 import { ContactsService } from "../services/contacts.service";
@@ -13,6 +15,7 @@ export default class ContactResolver {
     }
 
     @Query(returns => [Contact])
+    @UseGuards(GraphqlAuthGuard)
     getAllContacts() {
         return this.contactService.getAllContacts();
     }
