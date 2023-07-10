@@ -18,13 +18,24 @@ export class PermissionGuard implements CanActivate {
         if (!user) {
             throw new UnauthorizedException(`Invalid User`);
         }
-        const permissionName = this.reflector.get<string>('permission', context.getHandler());
+        const methodPermissionName = this.reflector.get<string>('permission', context.getHandler());
+        const classPermissionName = this.reflector.get<string>('permission', context.getClass());
         const allowedPermissions = await this.authService.getUserPermissions(user.username);
-        if (allowedPermissions.includes(permissionName)) {
-            return true;
-        } else {
-            throw new ForbiddenException(`User not authorized for this action.`)
+        if (methodPermissionName) {
+            if (allowedPermissions.includes(methodPermissionName)) {
+                return true;
+            } else {
+                throw new ForbiddenException(`User not authorized for this action.`)
+            }
         }
+        if (classPermissionName) {
+            if (allowedPermissions.includes(classPermissionName)) {
+                return true;
+            } else {
+                throw new ForbiddenException(`User not authorized for this action.`)
+            }
+        }
+
     }
 
 }

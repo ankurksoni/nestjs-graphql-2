@@ -49,6 +49,42 @@ export class PermissionService {
                 displayName: "DELETE_CONTACT",
                 groupName: GroupName.CONTACTS
             },
+            {
+                name: "VIEW_PERMISSIONS",
+                description: "VIEW_PERMISSIONS",
+                displayName: "VIEW_PERMISSIONS",
+                groupName: GroupName.UAA
+            },
+            {
+                name: "VIEW_ROLE",
+                description: "VIEW_ROLE",
+                displayName: "VIEW_ROLE",
+                groupName: GroupName.UAA
+            },
+            {
+                name: "CREATE_ROLE",
+                description: "CREATE_ROLE",
+                displayName: "CREATE_ROLE",
+                groupName: GroupName.UAA
+            },
+            {
+                name: "UPDATE_ROLE",
+                description: "UPDATE_ROLE",
+                displayName: "UPDATE_ROLE",
+                groupName: GroupName.UAA
+            },
+            {
+                name: "DELETE_ROLE",
+                description: "DELETE_ROLE",
+                displayName: "DELETE_ROLE",
+                groupName: GroupName.UAA
+            },
+            {
+                name: "ASSIGN_ROLE",
+                description: "ASSIGN_ROLE",
+                displayName: "ASSIGN_ROLE",
+                groupName: GroupName.UAA
+            }
         ];
         for (var i = 0; i < permissions.length; i++) {
             const permission = permissions[i];

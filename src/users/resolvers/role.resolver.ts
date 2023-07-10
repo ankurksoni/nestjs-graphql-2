@@ -1,4 +1,8 @@
+import { UseGuards } from "@nestjs/common";
 import { Args, Mutation, Query, Resolver } from "@nestjs/graphql";
+import { GraphqlAuthGuard } from "src/auth/guards/graphql.guard";
+import { PermissionGuard } from "src/auth/guards/permission.guard";
+import { HasPermission } from "../decorator/has.permission.decorator";
 import { Role } from "../entities/role.entity";
 import { AssignPermissionsInput } from "../inputs/assign.permission.input";
 import { RoleInput } from "../inputs/role.Input";
@@ -6,6 +10,8 @@ import { UpdateRoleInput } from "../inputs/update.role.input";
 import { RoleService } from "../services/role.service";
 
 @Resolver(of => Role)
+@UseGuards(GraphqlAuthGuard, PermissionGuard)
+@HasPermission('VIEW_ROLE')
 export class RoleResolver {
 
     constructor(private roleService: RoleService) { }
@@ -24,6 +30,7 @@ export class RoleResolver {
     }
 
     @Mutation(returns => Role)
+    @HasPermission('CREATE_ROLE')
     createRole(
         @Args('roleInput')
         roleInput: RoleInput
@@ -32,6 +39,7 @@ export class RoleResolver {
     }
 
     @Mutation(returns => Role)
+    @HasPermission('UPDATE_ROLE')
     updateRole(
         @Args('uuid')
         uuid: string,
@@ -42,6 +50,7 @@ export class RoleResolver {
     }
 
     @Mutation(returns => Role)
+    @HasPermission('DELETE_ROLE')
     deleteRole(
         @Args('uuid')
         uuid: string
@@ -50,6 +59,7 @@ export class RoleResolver {
     }
 
     @Mutation(returns => Role)
+    @HasPermission('ASSIGN_ROLE')
     assignPermissions(
         @Args('assignPermissionsInput')
         assignPermissionsInput: AssignPermissionsInput
