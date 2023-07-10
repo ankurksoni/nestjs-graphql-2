@@ -1,5 +1,6 @@
 import { Args, Mutation, Query, Resolver } from "@nestjs/graphql";
 import { User } from "../entities/users.entity";
+import { AssignRolesInput } from "../inputs/assign.roles.input";
 import { UpdateUserInput } from "../inputs/update.user.input";
 import { UserInput } from "../inputs/user.input";
 import { UserService } from "../services/user.service";
@@ -8,7 +9,7 @@ import { UserService } from "../services/user.service";
 @Resolver(of => User)
 export class UserResolver {
 
-    constructor(private userService: UserService) {    }
+    constructor(private userService: UserService) { }
 
     @Query(returns => User)
     getUser(
@@ -16,6 +17,11 @@ export class UserResolver {
         uuid: string
     ) {
         return this.userService.getUserByUUID(uuid);
+    }
+
+    @Query(returns => [User])
+    getUsers() {
+        return this.userService.getUsers();
     }
 
     @Mutation(returns => User)
@@ -80,5 +86,13 @@ export class UserResolver {
         confirmNewPassword: string,
     ) {
         return this.userService.changeUserPassword(uuid, oldPassword, newPassword, confirmNewPassword);
+    }
+
+    @Mutation(returns => User)
+    assignRoles(
+        @Args('assignRolesInput')
+        assignRolesInput: AssignRolesInput
+    ) {
+        return this.userService.assignRoles(assignRolesInput)
     }
 }

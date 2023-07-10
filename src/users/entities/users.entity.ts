@@ -37,5 +37,6 @@ export class User extends IdentityEntity {
         joinColumn: { name: 'user_id', referencedColumnName: 'id'},
         inverseJoinColumn: { name: 'role_id', referencedColumnName: 'id'},
     })
+    @Field(type => [Role], {nullable: true})
     roles: Role[];
 } 

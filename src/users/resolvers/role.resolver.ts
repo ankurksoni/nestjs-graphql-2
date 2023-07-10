@@ -1,5 +1,6 @@
 import { Args, Mutation, Query, Resolver } from "@nestjs/graphql";
 import { Role } from "../entities/role.entity";
+import { AssignPermissionsInput } from "../inputs/assign.permission.input";
 import { RoleInput } from "../inputs/role.Input";
 import { UpdateRoleInput } from "../inputs/update.role.input";
 import { RoleService } from "../services/role.service";
@@ -14,7 +15,7 @@ export class RoleResolver {
         return this.roleService.getAllRoles();
     }
 
-    @Query(returns => Role, {nullable: true})
+    @Query(returns => Role, { nullable: true })
     getRoleByUUID(
         @Args('uuid')
         uuid: string
@@ -46,5 +47,13 @@ export class RoleResolver {
         uuid: string
     ) {
         return this.roleService.deleteRole(uuid);
+    }
+
+    @Mutation(returns => Role)
+    assignPermissions(
+        @Args('assignPermissionsInput')
+        assignPermissionsInput: AssignPermissionsInput
+    ) {
+        return this.roleService.assignPermissions(assignPermissionsInput);
     }
 }

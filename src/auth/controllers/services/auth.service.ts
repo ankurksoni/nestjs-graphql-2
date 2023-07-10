@@ -16,6 +16,20 @@ export class AuthService {
         private jwtService: JwtService
     ) { }
 
+    async getUserPermissions(username: string): Promise<string[]> {
+        const query = `
+            SELECT pm.name FROM cm_users u
+            INNER JOIN cm_user_roles ru       ON ru.user_id = u.id
+            INNER JOIN cm_roles_permissions pr ON pr.role_id=ru.role_id
+            INNER JOIN cm_permission pm      ON pm.id=pr.permission_id
+            WHERE u.username='${username}' 
+            GROUP BY pm.name, u.username
+        `;
+        const permissions = await this.userRepository.query(query);
+        const permissionNames = permissions.map(p => p.name);
+        return permissionNames;
+    }
+
     async login({ username, password }: LoginDTO) {
         const user = await this.userRepository.findOne({ where: { username } });
         const isPasswordMatching = await hasSamePasswords(password, user.password);

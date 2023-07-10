@@ -24,5 +24,6 @@ export class Role extends IdentityEntity {
         joinColumn: { name: 'role_id', referencedColumnName: 'id' },
         inverseJoinColumn: { name: 'permission_id', referencedColumnName: 'id' },
     })
-    permission: Permission[];
+    @Field(type => [Permission], {nullable: true})
+    permissions: Permission[];
 } 

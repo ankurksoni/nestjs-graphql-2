@@ -3,7 +3,9 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { GraphQLError } from "graphql";
 import { hashIt, hasSamePasswords } from "src/common/utils";
 import { Repository } from "typeorm";
+import { Role } from "../entities/role.entity";
 import { User } from "../entities/users.entity";
+import { AssignRolesInput } from "../inputs/assign.roles.input";
 import { UpdateUserInput } from "../inputs/update.user.input";
 import { UserInput } from "../inputs/user.input";
 
@@ -12,9 +14,9 @@ export class UserService {
 
     constructor(
         @InjectRepository(User)
-        private readonly userRepository: Repository<User>) {
-
-    }
+        private readonly userRepository: Repository<User>,
+        @InjectRepository(Role)
+        private readonly roleRepository: Repository<Role>) { }
 
     async getUserByUUID(uuid: string) {
         const user = await this.userRepository.findOne({
@@ -22,6 +24,16 @@ export class UserService {
                 uuid,
                 deleted: false
             }
+        });
+        return user;
+    }
+
+    async getUsers() {
+        const user = await this.userRepository.find({
+            where: {
+                deleted: false
+            },
+            relations: ['roles', 'roles.permissions']
         });
         return user;
     }
@@ -88,7 +100,7 @@ export class UserService {
         if (!isOldPasswordCorrect) {
             throw new GraphQLError(`old password is incorrect.`);
         }
-        
+
         const isNewPassMatchingOldPass = await hasSamePasswords(newPassword, user.password);
         if (isNewPassMatchingOldPass) {
             throw new GraphQLError(`password must not match old password.`);
@@ -142,5 +154,39 @@ export class UserService {
         }
         user.deleted = false;
         return this.userRepository.save(user);
+    }
+
+    async assignRoles({ userUUID: uuid, roleUUIDs }: AssignRolesInput) {
+        const user = await this.getUserByUUID(uuid);
+        if (!user) {
+            throw new GraphQLError(`User does not exists, UUID: ${uuid}`);
+        }
+        const roles: Role[] = await this.validateRoles(roleUUIDs);
+        if (roles.length > 0) {
+            await this.deleteRoles(user.id);
+            user.roles = roles;
+        }
+        return this.userRepository.save(user);
+    }
+
+    async validateRoles(roleUUIDs: string[]) {
+        const roles = roleUUIDs.map(async ruuid => {
+            const role = await this.roleRepository.findOne({
+                where: {
+                    uuid: ruuid,
+                    deleted: false
+                }
+            });
+            if (!role) {
+                throw new GraphQLError(`Role: ${ruuid} not found.`);
+            }
+            return role;
+        });
+        const mRoles = await Promise.all(roles);
+        return mRoles;
+    }
+
+    async deleteRoles(userID: number) {
+        return this.userRepository.query(`DELETE FROM cm_user_roles where user_id=${userID}`);
     }
 }

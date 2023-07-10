@@ -29,7 +29,8 @@ import { GraphqlAuthGuard } from './guards/graphql.guard';
         AuthService,
         JwtStrategy,
         JwtAuthGuard,
-        GraphqlAuthGuard
-    ]
+        GraphqlAuthGuard,
+    ],
+    exports: [AuthService]
 })
 export class AuthModule { }
