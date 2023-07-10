@@ -8,9 +8,7 @@ import { UserService } from "../services/user.service";
 @Resolver(of => User)
 export class UserResolver {
 
-    constructor(private userService: UserService) {
-
-    }
+    constructor(private userService: UserService) {    }
 
     @Query(returns => User)
     getUser(
